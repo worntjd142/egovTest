@@ -1,13 +1,9 @@
 package member.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -65,60 +61,45 @@ public class MemberController {
 	
 	/* 로그인 페이지 호출 */
 	@RequestMapping ("/login.do")
-	public String login() {
-		return "member/login";
-	}
-	
-	/*로그인 PROC 실행화면 */
-	@RequestMapping("/loginProc.do")
-	@ResponseBody //세션을 만들어주는 클래스
-	public String loginProc (MemberVO vo, HttpSession session) throws Exception{
-		System.out.println(vo);
-		String message = "";
+	@ResponseBody
+	public String login(MemberVO mv, HttpSession session) throws Exception {
 		
-		int cnt = memberService.selectIdChk(vo.getUserid());
-		System.out.println("cnt : " +cnt);
+		String m =""; // 리턴할 데이터.
 		
-		if(cnt == 0 ) {//아이디가 없습니다.
-			message = "x";
-		} else {//성공 
-			int cnt2 = memberService.loginProc(vo);
-			System.out.println("cnt2 : "+  cnt2);
+		int form = memberService.loginProc(mv);
+		
+		System.out.println(form);
+		if(form == 3) {
 			
-			if(cnt2 == 0) { //패스워드가 틀려요
-				message = "wrong password";
-			} else {
-				//session 생성
-				session.setAttribute("sessionId", vo.getUserid());
-				message = "ok";
-			}
+			m = "X"; //아이디가 없음.
+			
+		}else if(form == 2) {
+			
+			m = "N"; //아이디 및 비밀번호가 틀림.
+			
+		}else {
+			
+			m = "Y"; //아이디 및 비밀번호가 맞음.
+			
+			session.setAttribute("id", mv.getUserid()); //아이디를 세션영역에 저장.
 		}
-		return message;
+		System.out.println(m);
+		return m;
 	}
 	
-	/* 
-	 * 로그아웃 
-	 */
+	//로그아웃
 	@RequestMapping("/logout.do")
+	@ResponseBody
 	public String logout (HttpSession session) {
-		session.removeAttribute("sessionId");
-		return "member/main";
+		//session.removeAttribute("sessionId"); -- 특정값 지정해서 세션값 삭제.
+		session.invalidate(); // 세션값 전체 삭제.
+		return "bye"; 
 	}
 	
-	/* 
-	 * 메인
-	 */
+	//메인
 	@RequestMapping("/main.do")
-	public String main (HttpSession session, Model model, String userid) throws Exception {
-		
-		System.out.println("데이터 찾는 중");
-		
-		List<MemberVO> DATA = memberService.memberselect() ;
-		
-		System.out.println("형태 알기" + DATA);
-		
-		model.addAttribute("data", DATA);
-	
+	public String main () throws Exception {
+			
 		return "member/main";
 	}
 }

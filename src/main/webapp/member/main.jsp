@@ -6,26 +6,118 @@
 <meta charset="UTF-8">
 <title>메인</title>
 </head>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <body>
-	<%@ include file="topMenu.jsp" %>
 
-<table border="1">
+<form id="frm" >
+<c:choose>
+
+<c:when test="${sessionScope.id == null}">
+<div id="login_box">
+
+	<input type="text" id="id" name="userid" placeholder="아이디"  style="height:30px"> 
+	<br>
+	<input type="password" id="pw" name="pass" placeholder="비밀번호" style="height: 30px"> 
+
+</div>
+
+	<input type="button" value="로그인" id="btn_submit" >
+
+</c:when>
+
+<c:otherwise>
+<div>
+	<label>환영합니다.${sessionScope.id}님</label><br>
+	<input type="button" value="로그아웃" id="btn_logout">
+</div>
+
+</c:otherwise>
 
 
-<caption>회원가입자</caption>
-	<c:forEach items="${data}" var ="member" varStatus="count">
+
+
+
+</c:choose>
+</form>
+
+
+<script>
+$(function(){
+	$("#btn_submit").click(function(){
+		
+		//<form id="frm">의 값을 가져와서 login_data에 초기화.
+		var login_data = $("#frm").serialize();
+		
+		console.log(login_data)
+		
+		$.ajax({
+			type:"post",
+			url:"login.do",
+			data: login_data,
+			dataType: "text",
+			
+			success: function(login_data){
+				console.log(login_data)
+				
+				if(login_data == "X"){
+					
+					alert("아이디가 없습니다.");
+					
+				}else if(login_data == "N"){
+					
+					alert("아이디 혹은 비밀번호가 틀렸습니다.")
+					
+					
+				}else {
+					
+					location.href="main.do"
+					
+				}
+				
+			},
+			error:function(){
+				
+				alert("매우 언짢음");
+			}
+			
+			
+		})
+		
+	})
 	
-	<tr>
-	<td>${count.count}. ${member.userid} </td>
-	<td>${member.name} </td>
-	<td>${member.tel} </td>
-	<td>${member.birth} </td>
-	<td>${member.address} </td>
+	$("#btn_logout").click(function(){
+		
+		$.ajax({
+			type: "get",
+			url:"logout.do",
+			
+			success:function(data){
+			
+				if(data == "bye"){
+					location.href="main.do"
+				}
+			
+			},
+			
+			error:function(){
+				
+				alert("헐");
+				
+			}
+			
+		})
+		
+		
+	})
 	
-	</tr>
-	</c:forEach>
+	
+	
+	
+})
 
-</table>
+</script>
+
+
 
 </body>
 </html>
