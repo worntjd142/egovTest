@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<!-- namspace를 사용하기 위해서는 sql-map-config.xml에 세팅을 해주어야 한다. -->
+
+<sqlMap namespace="memberDAO">
+	<!--egovMap list 데이터 -->
+	<typeAlias alias="egovMap"  type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="memberVO" type="member.service.MemberVO"/>
+	
+	<insert id="memberDAO.insertMember">
+		INSERT INTO MEMBER(USERID,
+						   PASS,
+						   NAME,
+						   GENDER,
+						   BIRTH,
+						   TEL,
+						   ADDRESS)
+					VALUES(#userid#,
+						   #pass#,
+						   #name#,
+						   #gender#,
+						   #birth#,
+						   #tel#,
+						   #address#)	
+	</insert>
+	 
+	 <!-- 데이터를 비교할 때 *은 전체니까 아이디하나와 전체 비교한다면 당연하게 안되니 주의하자. -->
+	 
+	 <select id="memberDAO.memberIdChk" resultClass="String">
+	 	SELECT USERID FROM MEMBER WHERE USERID= #userid# 
+	 </select>
+	 
+	 <select id="loginProc" resultClass="Integer">
+		SELECT COUNT(*) 
+		  FROM MEMBER
+		 WHERE USERID = #userid#
+		 AND   PASS = #pass#
+	 </select>
+	 
+	 <select id="selectMemberList" resultClass="egovMap">
+		SELECT ROWNUM() as row,
+			   USERID,
+		       PASS,
+		       NAME,
+		       TEL,
+		       ADDRESS
+		  FROM MEMBER
+	</select>
+</sqlMap>
