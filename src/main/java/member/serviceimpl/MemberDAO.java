@@ -11,25 +11,13 @@ import member.service.MemberVO;
 @Repository("memberDAO")
 public class MemberDAO extends EgovAbstractDAO{
 
-	public String insertMember(MemberVO vo) {
-		return (String) insert("memberDAO.insertMember", vo);
+	public List<?> select_board() {
+		
+		return list("memberDAO.select_board");
 	}
-	
-	public String memberIdChk(MemberVO co) {
-		System.out.println("다오" + co); 
-		String userid = co.getUserid();
-		return (String)select("memberDAO.memberIdChk", userid);
+
+	public void insert(MemberVO vo) {
+		 insert("memberDAO.insert", vo);
 	}
-	
-	public int loginProc(MemberVO vo) {
-		return (int) select("memberDAO.loginProc", vo);
-	}
-	
-	public int idlogin(String string) {
-		return (int) select("memberDAO.idlogin", string);
-	}
-	
-	public List<?> selectMemberList() {
-		return list("memberDAO.selectMemberList");
-	}		
+
 }
